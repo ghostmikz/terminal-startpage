@@ -2,6 +2,8 @@
 
 This repository contains a minimalist, terminal-themed browser startpage. It features a blurred UI, custom categories, and a functional command-line interface for navigation and searching.
 
+![Terminal Startpage Preview](assets/screenshot.png)
+
 ## Repository Structure
 
 * `assets/` – Contains visual assets (e.g., `bg-terminal.jpg`)
