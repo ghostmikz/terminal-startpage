@@ -1,37 +1,33 @@
-# Terminal-Style Start Page
+# Terminal Startpage
 
-FireFox and Chrome start page a minimalist, terminal-inspired start page for your browser. This project provides a clean and customizable interface for quickly accessing your favorite websites and performing searches.
+This repository contains a minimalist, terminal-themed browser startpage. It features a blurred UI, custom categories, and a functional command-line interface for navigation and searching.
 
-![Screenshot](https://github.com/user-attachments/assets/75fc5fb7-4cd5-4160-ac78-fa2a1abbbe10)
-## Features
+## Repository Structure
 
-- **Terminal Aesthetic**: Dark theme with monospaced font and command-line interface.
-- **Customizable Links**: Add your favorite websites and categorize them.
-- **Quick Search**: Type commands to navigate or search the web.
-- **Responsive Design**: Works on all screen sizes.
+* `assets/` – Contains visual assets (e.g., `bg-terminal.jpg`)
+* `index.html` – The core structure, styling, and logic of the startpage
+* `README.md` – Project documentation and instructions
 
-## Usage
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/BRSkings/TerminalStart
-2. Run it localy through any why of you want 
+## Tech Stack
 
-## Customization
-Edit the links object in the <script> section of bestone.html to add or modify commands.
+* **HTML5** – Page structure
+* **CSS3** – Glassmorphism UI and terminal-themed styling
+* **JavaScript (Vanilla)** – Command filtering, shortcut logic, and Google search integration
 
-Replace the background image by updating the background URL in the CSS.
+## How to Use
 
-## Example Commands
-📺 youtube: Opens Freetube.
+1. Clone this repository to your local machine.
+2. Set the `index.html` file as your browser's custom new tab page (using an extension like *Custom New Tab*).
+3. Interact with the terminal:
+* **Type a shortcut:** Type `yt` or `gh` and press **Enter** to jump to YouTube or GitHub.
+* **Filter:** Type any letter to dim links that don't match your input.
+* **Search:** Type anything that isn't a shortcut and press **Enter** to search Google.
 
-🎮 steam: Opens Steam.
+```
+# To preview the startpage locally:
+# Open index.html in your preferred browser
+open index.html
 
-🐙 github: Opens GitHub.
+```
 
-search <query>: Performs a Searx search.
-
-## Technologies Used
-HTML, CSS, JavaScript
-
-## inspiration
-I got inspiration from Excalith's start page: [https://excalith-start-page.vercel.app/](https://github.com/excalith/excalith-start-page)
+---
