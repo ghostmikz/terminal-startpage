@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal</title>
+    <style>
+       body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: url('./assets/bg-terminal.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: "Fira Code", monospace;
+}
+
+        .rounded-box {
+            width: 700px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.16);
+            border-radius: 10px;
+            backdrop-filter: blur(16px);
+            box-shadow: 
+                0 0 5px rgba(0, 0, 0, 0.145),
+                0 0 25px rgba(0, 0, 0, 0.145),
+                0 0 50px rgba(0, 0, 0, 0.145),
+                0 0 200px rgba(0, 0, 0, 0.145);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding-bottom: 30px;
+        }
+
+        .subtext {
+            cursor: pointer;
+            transition: opacity 0.2s, color 0.2s;
+            color: white;
+        }
+
+        .subtext:hover {
+            color: #90EE90;
+        }
+
+        .subtext.dimmed {
+            opacity: 0.3;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            font-size: 14px;
+            font-family: "Fira Code", monospace;
+            letter-spacing: 2px;
+        }
+
+        .prompt {
+            margin-right: 5px;
+            letter-spacing: 2px;
+        }
+
+        .prompt .user {
+            color: #B62ED8;
+        }
+
+        .prompt .at {
+            color: #97989D;
+        }
+
+        .prompt .browser {
+            color: #AFF8B4;
+        }
+
+        .prompt .arrow {
+            color: #B62ED8;
+        }
+
+        .text-area {
+            flex-grow: 1;
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 14px;
+            font-family: "Fira Code", monospace;
+            outline: none;
+            caret-color: #B62ED8;
+            letter-spacing: 2px;
+        }
+
+        .category.general {
+            color: #2ED8A2;
+        }
+
+        .category.coding {
+            color: #D1AFF8;
+        }
+
+        .category.dev {
+            color: #62E0E2;
+        }
+
+        .category.personal {
+            color: #F8B44A;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputBox = document.querySelector(".text-area");
+            const clickableItems = document.querySelectorAll(".subtext");
+
+            const links = {
+                // General (Social Focus)
+                "🎬 youtube": "https://www.youtube.com/",
+                "yt": "https://www.youtube.com/",
+                "📸 instagram": "https://www.instagram.com/",
+                "ig": "https://www.instagram.com/",
+                "🌐 facebook": "https://www.facebook.com/",
+                "fb": "https://www.facebook.com/",
+                "🤖 reddit": "https://www.reddit.com/",
+                "reddit": "https://www.reddit.com/",
+
+                // Personal
+                "⌨️ monkeytype": "https://monkeytype.com/",
+                "mt": "https://monkeytype.com/",
+                "🎧 spotify": "https://open.spotify.com/",
+                "spotify": "https://open.spotify.com/",
+                "🎨 pinterest": "https://www.pinterest.com/",
+                "pin": "https://www.pinterest.com/",
+                "📁 fmhy": "https://fmhy.net/",
+                "fmhy": "https://fmhy.net/",
+
+                // Coding
+                "⚔️ leetcode": "https://leetcode.com/",
+                "lc": "https://leetcode.com/",
+                "🏆 codeforces": "https://codeforces.com/",
+                "cf": "https://codeforces.com/",
+                "📦 codepen": "https://codepen.io/",
+                "cp": "https://codepen.io/",
+                "📊 cses": "https://cses.fi/",
+                "cses": "https://cses.fi/",
+                
+                // Dev
+                "🐙 github": "https://github.com/",
+                "gh": "https://github.com/",
+                "✨ gemini": "https://gemini.google.com/",
+                "gemini": "https://gemini.google.com/",
+                "🧠 chatgpt": "https://chatgpt.com/",
+                "gpt": "https://chatgpt.com/",
+                "📚 stackoverflow": "https://stackoverflow.com/",
+                "so": "https://stackoverflow.com/",
+            };
+
+            function filterItems(searchText) {
+                clickableItems.forEach(item => {
+                    const itemText = item.innerText.toLowerCase();
+                    if (itemText.includes(searchText.toLowerCase())) {
+                        item.classList.remove("dimmed");
+                    } else {
+                        item.classList.add("dimmed");
+                    }
+                });
+            }
+
+            inputBox.addEventListener("input", function () {
+                const inputText = inputBox.value.trim();
+                filterItems(inputText);
+            });
+
+            inputBox.addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    const inputText = inputBox.value.trim().toLowerCase();
+                    
+                    if (links[inputText]) {
+                        window.open(links[inputText], "_blank");
+                    } else if (inputText !== "") {
+                       window.open(`https://www.google.com/search?q=${encodeURIComponent(inputText)}`, "_blank");
+                    }
+                    
+                    inputBox.value = "";
+                    filterItems("");
+                }
+            });
+
+            clickableItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    const text = item.innerText.toLowerCase();
+                    if (links[text]) {
+                        window.open(links[text], "_blank");
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="rounded-box">
+        <div class="content">
+            <div class="column">
+                <div class="category general">General</div>
+                <div class="subtext">🎬 YouTube</div>
+                <div class="subtext">📸 Instagram</div>
+                <div class="subtext">🌐 Facebook</div>
+                <div class="subtext">🤖 Reddit</div>
+            </div>
+            <div class="column">
+                <div class="category personal">Personal</div>
+                <div class="subtext">⌨️ Monkeytype</div>
+                <div class="subtext">🎧 Spotify</div>
+                <div class="subtext">🎨 Pinterest</div>
+                <div class="subtext">📁 FMHY</div>
+            </div>
+            <div class="column">
+                <div class="category coding">Coding</div>
+                <div class="subtext">⚔️ LeetCode</div>
+                <div class="subtext">🏆 Codeforces</div>
+                <div class="subtext">📦 CodePen</div>
+                <div class="subtext">📊 CSES</div>
+            </div>
+            <div class="column">
+                <div class="category dev">Dev</div>
+                <div class="subtext">🐙 GitHub</div>
+                <div class="subtext">✨ Gemini</div>
+                <div class="subtext">🧠 ChatGPT</div>
+                <div class="subtext">📚 StackOverflow</div>
+            </div>
+        </div>
+        <div class="input-container">
+            <span class="prompt">
+                <span class="user">ghostmikz</span><span class="at">@</span><span class="browser">browser</span> <span class="arrow">❯</span>
+            </span>
+            <input type="text" class="text-area" placeholder="command..." autofocus>
+        </div>
+    </div>
+</body>
+</html>
