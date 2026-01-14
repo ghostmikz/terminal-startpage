@@ -29,7 +29,6 @@ This repository contains a minimalist, terminal-themed browser startpage. It fea
 # To preview the startpage locally:
 # Open index.html in your preferred browser
 open index.html
-
 ```
 
 ---
