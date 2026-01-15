@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ghostmikz ~/</title>
+    <link rel="preload" as="image" href="./assets/bg-terminal.jpg">
     <link rel="icon" type="image/png" href="./assets/favicon.png">
     <style>
         body, html {
@@ -13,7 +14,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* Added #000 (black) as the fallback color */
             background: #000 url('./assets/bg-terminal.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: "Fira Code", monospace;
@@ -116,7 +116,6 @@
             const filterItems = (query) => {
                 const q = query.toLowerCase();
                 clickableItems.forEach(item => {
-                    // Optimized: check if text includes query, toggle class based on result
                     item.classList.toggle("dimmed", q !== "" && !item.textContent.toLowerCase().includes(q));
                 });
             };
@@ -127,23 +126,18 @@
                 if (e.key === "Enter") {
                     const val = inputBox.value.trim().toLowerCase();
                     if (!val) return;
-
-                    // Remove emoji/special chars for lookup
                     const cleanVal = val.replace(/[^\w\s]/gi, '');
                     const target = links[val] || links[cleanVal];
-
                     if (target) {
                         window.open(target, "_blank");
                     } else {
                         window.open(`https://www.google.com/search?q=${encodeURIComponent(val)}`, "_blank");
                     }
-
                     inputBox.value = "";
                     filterItems("");
                 }
             });
 
-            // Event Delegation: One listener for all links
             container.addEventListener("click", e => {
                 const item = e.target.closest(".subtext");
                 if (item) {
@@ -152,6 +146,13 @@
                 }
             });
         });
+
+        // Register Service Worker for instant loading
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW failed', err));
+            });
+        }
     </script>
 </body>
 </html>
