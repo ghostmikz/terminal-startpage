@@ -6,209 +6,51 @@
     <title>ghostmikz ~/</title>
     <link rel="icon" type="image/png" href="./assets/favicon.png">
     <style>
-       body, html {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: url('./assets/bg-terminal.jpg') no-repeat center center fixed;
-    background-size: cover;
-    font-family: "Fira Code", monospace;
-}
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* Added #000 (black) as the fallback color */
+            background: #000 url('./assets/bg-terminal.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: "Fira Code", monospace;
+        }
         .rounded-box {
             width: 700px;
             padding: 30px;
             background-color: rgba(255, 255, 255, 0.16);
             border-radius: 10px;
             backdrop-filter: blur(16px);
-            box-shadow: 
-                0 0 5px rgba(0, 0, 0, 0.145),
-                0 0 25px rgba(0, 0, 0, 0.145),
-                0 0 50px rgba(0, 0, 0, 0.145),
-                0 0 200px rgba(0, 0, 0, 0.145);
+            box-shadow: 0 0 5px rgba(0,0,0,.145), 0 0 25px rgba(0,0,0,.145), 0 0 50px rgba(0,0,0,.145), 0 0 200px rgba(0,0,0,.145);
             color: #333;
             display: flex;
             flex-direction: column;
             gap: 20px;
             position: relative;
         }
-
-        .content {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            padding-bottom: 30px;
-        }
-
-        .subtext {
-            cursor: pointer;
-            transition: opacity 0.2s, color 0.2s;
-            color: white;
-        }
-
-        .subtext:hover {
-            color: #90EE90;
-        }
-
-        .subtext.dimmed {
-            opacity: 0.3;
-        }
-
-        .input-container {
-            display: flex;
-            align-items: center;
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            font-size: 14px;
-            font-family: "Fira Code", monospace;
-            letter-spacing: 2px;
-        }
-
-        .prompt {
-            margin-right: 5px;
-            letter-spacing: 2px;
-        }
-
-        .prompt .user {
-            color: #B62ED8;
-        }
-
-        .prompt .at {
-            color: #97989D;
-        }
-
-        .prompt .browser {
-            color: #AFF8B4;
-        }
-
-        .prompt .arrow {
-            color: #B62ED8;
-        }
-
-        .text-area {
-            flex-grow: 1;
-            background-color: transparent;
-            border: none;
-            color: white;
-            font-size: 14px;
-            font-family: "Fira Code", monospace;
-            outline: none;
-            caret-color: #B62ED8;
-            letter-spacing: 2px;
-        }
-
-        .category.general {
-            color: #2ED8A2;
-        }
-
-        .category.coding {
-            color: #D1AFF8;
-        }
-
-        .category.dev {
-            color: #62E0E2;
-        }
-
-        .category.personal {
-            color: #F8B44A;
-        }
+        .content { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-bottom: 30px; }
+        .subtext { cursor: pointer; transition: opacity 0.2s, color 0.2s; color: white; }
+        .subtext:hover { color: #90EE90; }
+        .subtext.dimmed { opacity: 0.3; }
+        .input-container { display: flex; align-items: center; position: absolute; bottom: 10px; left: 10px; right: 10px; font-size: 14px; font-family: "Fira Code", monospace; letter-spacing: 2px; }
+        .prompt { margin-right: 5px; letter-spacing: 2px; }
+        .prompt .user { color: #B62ED8; }
+        .prompt .at { color: #97989D; }
+        .prompt .browser { color: #AFF8B4; }
+        .prompt .arrow { color: #B62ED8; }
+        .text-area { flex-grow: 1; background-color: transparent; border: none; color: white; font-size: 14px; font-family: "Fira Code", monospace; outline: none; caret-color: #B62ED8; letter-spacing: 2px; }
+        .category.general { color: #2ED8A2; }
+        .category.coding { color: #D1AFF8; }
+        .category.dev { color: #62E0E2; }
+        .category.personal { color: #F8B44A; }
     </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const inputBox = document.querySelector(".text-area");
-            const clickableItems = document.querySelectorAll(".subtext");
-
-            const links = {
-                // General (Social Focus)
-                "🎬 youtube": "https://www.youtube.com/",
-                "yt": "https://www.youtube.com/",
-                "📸 instagram": "https://www.instagram.com/",
-                "ig": "https://www.instagram.com/",
-                "🌐 facebook": "https://www.facebook.com/",
-                "fb": "https://www.facebook.com/",
-                "🤖 reddit": "https://www.reddit.com/",
-                "reddit": "https://www.reddit.com/",
-
-                // Personal
-                "⌨️ monkeytype": "https://monkeytype.com/",
-                "mt": "https://monkeytype.com/",
-                "🎧 spotify": "https://open.spotify.com/",
-                "spotify": "https://open.spotify.com/",
-                "🎨 pinterest": "https://www.pinterest.com/",
-                "pin": "https://www.pinterest.com/",
-                "📁 fmhy": "https://fmhy.net/",
-                "fmhy": "https://fmhy.net/",
-
-                // Coding
-                "⚔️ leetcode": "https://leetcode.com/",
-                "lc": "https://leetcode.com/",
-                "🏆 codeforces": "https://codeforces.com/",
-                "cf": "https://codeforces.com/",
-                "📦 codepen": "https://codepen.io/",
-                "cp": "https://codepen.io/",
-                "📊 cses": "https://cses.fi/",
-                "cses": "https://cses.fi/",
-                
-                // Dev
-                "🐙 github": "https://github.com/",
-                "gh": "https://github.com/",
-                "✨ gemini": "https://gemini.google.com/",
-                "gemini": "https://gemini.google.com/",
-                "🧠 chatgpt": "https://chatgpt.com/",
-                "gpt": "https://chatgpt.com/",
-                "📚 stackoverflow": "https://stackoverflow.com/",
-                "so": "https://stackoverflow.com/",
-            };
-
-            function filterItems(searchText) {
-                clickableItems.forEach(item => {
-                    const itemText = item.innerText.toLowerCase();
-                    if (itemText.includes(searchText.toLowerCase())) {
-                        item.classList.remove("dimmed");
-                    } else {
-                        item.classList.add("dimmed");
-                    }
-                });
-            }
-
-            inputBox.addEventListener("input", function () {
-                const inputText = inputBox.value.trim();
-                filterItems(inputText);
-            });
-
-            inputBox.addEventListener("keypress", function (event) {
-                if (event.key === "Enter") {
-                    const inputText = inputBox.value.trim().toLowerCase();
-                    
-                    if (links[inputText]) {
-                        window.open(links[inputText], "_blank");
-                    } else if (inputText !== "") {
-                       window.open(`https://www.google.com/search?q=${encodeURIComponent(inputText)}`, "_blank");
-                    }
-                    
-                    inputBox.value = "";
-                    filterItems("");
-                }
-            });
-
-            clickableItems.forEach(item => {
-                item.addEventListener("click", function () {
-                    const text = item.innerText.toLowerCase();
-                    if (links[text]) {
-                        window.open(links[text], "_blank");
-                    }
-                });
-            });
-        });
-    </script>
 </head>
 <body>
     <div class="rounded-box">
-        <div class="content">
+        <div class="content" id="link-container">
             <div class="column">
                 <div class="category general">General</div>
                 <div class="subtext">🎬 YouTube</div>
@@ -245,5 +87,71 @@
             <input type="text" class="text-area" placeholder="command..." autofocus>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputBox = document.querySelector(".text-area");
+            const container = document.getElementById("link-container");
+            const clickableItems = document.querySelectorAll(".subtext");
+
+            const links = {
+                "youtube": "https://www.youtube.com/", "yt": "https://www.youtube.com/",
+                "instagram": "https://www.instagram.com/", "ig": "https://www.instagram.com/",
+                "facebook": "https://www.facebook.com/", "fb": "https://www.facebook.com/",
+                "reddit": "https://www.reddit.com/",
+                "monkeytype": "https://monkeytype.com/", "mt": "https://monkeytype.com/",
+                "spotify": "https://open.spotify.com/",
+                "pinterest": "https://www.pinterest.com/", "pin": "https://www.pinterest.com/",
+                "fmhy": "https://fmhy.net/",
+                "leetcode": "https://leetcode.com/", "lc": "https://leetcode.com/",
+                "codeforces": "https://codeforces.com/", "cf": "https://codeforces.com/",
+                "codepen": "https://codepen.io/", "cp": "https://codepen.io/",
+                "cses": "https://cses.fi/",
+                "github": "https://github.com/", "gh": "https://github.com/",
+                "gemini": "https://gemini.google.com/",
+                "chatgpt": "https://chatgpt.com/", "gpt": "https://chatgpt.com/",
+                "stackoverflow": "https://stackoverflow.com/", "so": "https://stackoverflow.com/",
+            };
+
+            const filterItems = (query) => {
+                const q = query.toLowerCase();
+                clickableItems.forEach(item => {
+                    // Optimized: check if text includes query, toggle class based on result
+                    item.classList.toggle("dimmed", q !== "" && !item.textContent.toLowerCase().includes(q));
+                });
+            };
+
+            inputBox.addEventListener("input", e => filterItems(e.target.value));
+
+            inputBox.addEventListener("keydown", e => {
+                if (e.key === "Enter") {
+                    const val = inputBox.value.trim().toLowerCase();
+                    if (!val) return;
+
+                    // Remove emoji/special chars for lookup
+                    const cleanVal = val.replace(/[^\w\s]/gi, '');
+                    const target = links[val] || links[cleanVal];
+
+                    if (target) {
+                        window.open(target, "_blank");
+                    } else {
+                        window.open(`https://www.google.com/search?q=${encodeURIComponent(val)}`, "_blank");
+                    }
+
+                    inputBox.value = "";
+                    filterItems("");
+                }
+            });
+
+            // Event Delegation: One listener for all links
+            container.addEventListener("click", e => {
+                const item = e.target.closest(".subtext");
+                if (item) {
+                    const text = item.textContent.toLowerCase().replace(/[^\w\s]/gi, '').trim();
+                    if (links[text]) window.open(links[text], "_blank");
+                }
+            });
+        });
+    </script>
 </body>
 </html>
