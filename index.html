@@ -33,15 +33,18 @@
         }
         .content { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-bottom: 30px; }
         .subtext { cursor: pointer; transition: opacity 0.2s, color 0.2s; color: white; }
-        .subtext:hover { color: #90EE90; }
+        .subtext:hover, .subtext.selected { color: #90EE90; }
         .subtext.dimmed { opacity: 0.3; }
+        
         .input-container { display: flex; align-items: center; position: absolute; bottom: 10px; left: 10px; right: 10px; font-size: 14px; font-family: "Fira Code", monospace; letter-spacing: 2px; }
         .prompt { margin-right: 5px; letter-spacing: 2px; }
         .prompt .user { color: #B62ED8; }
         .prompt .at { color: #97989D; }
         .prompt .browser { color: #AFF8B4; }
         .prompt .arrow { color: #B62ED8; }
+        
         .text-area { flex-grow: 1; background-color: transparent; border: none; color: white; font-size: 14px; font-family: "Fira Code", monospace; outline: none; caret-color: #B62ED8; letter-spacing: 2px; }
+        
         .category.general { color: #2ED8A2; }
         .category.coding { color: #D1AFF8; }
         .category.dev { color: #62E0E2; }
@@ -51,40 +54,12 @@
 <body>
     <div class="rounded-box">
         <div class="content" id="link-container">
-            <div class="column">
-                <div class="category general">General</div>
-                <div class="subtext">🎬 YouTube</div>
-                <div class="subtext">📸 Instagram</div>
-                <div class="subtext">🌐 Facebook</div>
-                <div class="subtext">🤖 Reddit</div>
             </div>
-            <div class="column">
-                <div class="category personal">Personal</div>
-                <div class="subtext">⌨️ Monkeytype</div>
-                <div class="subtext">🎧 Spotify</div>
-                <div class="subtext">🎨 Pinterest</div>
-                <div class="subtext">📁 FMHY</div>
-            </div>
-            <div class="column">
-                <div class="category coding">Coding</div>
-                <div class="subtext">⚔️ LeetCode</div>
-                <div class="subtext">🏆 Codeforces</div>
-                <div class="subtext">📦 CodePen</div>
-                <div class="subtext">📊 CSES</div>
-            </div>
-            <div class="column">
-                <div class="category dev">Dev</div>
-                <div class="subtext">🐙 GitHub</div>
-                <div class="subtext">✨ Gemini</div>
-                <div class="subtext">🧠 ChatGPT</div>
-                <div class="subtext">📚 StackOverflow</div>
-            </div>
-        </div>
         <div class="input-container">
             <span class="prompt">
                 <span class="user">ghostmikz</span><span class="at">@</span><span class="browser">browser</span> <span class="arrow">❯</span>
             </span>
-            <input type="text" class="text-area" placeholder="command..." autofocus>
+            <input type="text" class="text-area" placeholder="command..." autofocus spellcheck="false">
         </div>
     </div>
 
@@ -92,46 +67,92 @@
         document.addEventListener("DOMContentLoaded", () => {
             const inputBox = document.querySelector(".text-area");
             const container = document.getElementById("link-container");
+            let selectedIndex = -1;
+
+            const siteData = [
+                { cat: "general", links: [
+                    { name: "🎬 YouTube", url: "https://www.youtube.com/", alias: ["yt"] },
+                    { name: "📸 Instagram", url: "https://www.instagram.com/", alias: ["ig"] },
+                    { name: "🌐 Facebook", url: "https://www.facebook.com/", alias: ["fb"] },
+                    { name: "🤖 Reddit", url: "https://www.reddit.com/", alias: ["r"] }
+                ]},
+                { cat: "personal", links: [
+                    { name: "⌨️ Monkeytype", url: "https://monkeytype.com/", alias: ["mt"] },
+                    { name: "🎧 Spotify", url: "https://open.spotify.com/", alias: ["sp"] },
+                    { name: "🎨 Pinterest", url: "https://www.pinterest.com/", alias: ["pin"] },
+                    { name: "📁 FMHY", url: "https://fmhy.net/", alias: ["fm"] }
+                ]},
+                { cat: "coding", links: [
+                    { name: "⚔️ LeetCode", url: "https://leetcode.com/", alias: ["lc"] },
+                    { name: "🏆 Codeforces", url: "https://codeforces.com/", alias: ["cf"] },
+                    { name: "📦 CodePen", url: "https://codepen.io/", alias: ["cp"] },
+                    { name: "📊 CSES", url: "https://cses.fi/", alias: ["cses"] }
+                ]},
+                { cat: "dev", links: [
+                    { name: "🐙 GitHub", url: "https://github.com/", alias: ["gh"] },
+                    { name: "✨ Gemini", url: "https://gemini.google.com/", alias: ["gem"] },
+                    { name: "🧠 ChatGPT", url: "https://chatgpt.com/", alias: ["gpt"] },
+                    { name: "📚 StackOverflow", url: "https://stackoverflow.com/", alias: ["so"] }
+                ]}
+            ];
+
+            // Build UI
+            container.innerHTML = siteData.map(group => `
+                <div class="column">
+                    <div class="category ${group.cat}">${group.cat.charAt(0).toUpperCase() + group.cat.slice(1)}</div>
+                    ${group.links.map(link => `<div class="subtext" data-url="${link.url}" data-alias='${JSON.stringify(link.alias)}'>${link.name}</div>`).join('')}
+                </div>
+            `).join('');
+
             const clickableItems = document.querySelectorAll(".subtext");
 
-            const links = {
-                "youtube": "https://www.youtube.com/", "yt": "https://www.youtube.com/",
-                "instagram": "https://www.instagram.com/", "ig": "https://www.instagram.com/",
-                "facebook": "https://www.facebook.com/", "fb": "https://www.facebook.com/",
-                "reddit": "https://www.reddit.com/",
-                "monkeytype": "https://monkeytype.com/", "mt": "https://monkeytype.com/",
-                "spotify": "https://open.spotify.com/",
-                "pinterest": "https://www.pinterest.com/", "pin": "https://www.pinterest.com/",
-                "fmhy": "https://fmhy.net/",
-                "leetcode": "https://leetcode.com/", "lc": "https://leetcode.com/",
-                "codeforces": "https://codeforces.com/", "cf": "https://codeforces.com/",
-                "codepen": "https://codepen.io/", "cp": "https://codepen.io/",
-                "cses": "https://cses.fi/",
-                "github": "https://github.com/", "gh": "https://github.com/",
-                "gemini": "https://gemini.google.com/",
-                "chatgpt": "https://chatgpt.com/", "gpt": "https://chatgpt.com/",
-                "stackoverflow": "https://stackoverflow.com/", "so": "https://stackoverflow.com/",
+            const filterItems = (query) => {
+                const q = query.toLowerCase().trim();
+                selectedIndex = -1;
+                clickableItems.forEach(item => {
+                    const name = item.textContent.toLowerCase();
+                    const aliases = JSON.parse(item.dataset.alias);
+                    const isMatch = q === "" || name.includes(q) || aliases.some(a => a.includes(q));
+                    item.classList.toggle("dimmed", !isMatch);
+                    item.classList.remove("selected");
+                });
             };
 
-            const filterItems = (query) => {
-                const q = query.toLowerCase();
-                clickableItems.forEach(item => {
-                    item.classList.toggle("dimmed", q !== "" && !item.textContent.toLowerCase().includes(q));
-                });
+            const updateSelection = (visibleItems) => {
+                clickableItems.forEach(i => i.classList.remove("selected"));
+                if (selectedIndex >= 0 && visibleItems[selectedIndex]) {
+                    visibleItems[selectedIndex].classList.add("selected");
+                }
             };
 
             inputBox.addEventListener("input", e => filterItems(e.target.value));
 
-            inputBox.addEventListener("keydown", e => {
-                if (e.key === "Enter") {
+            document.addEventListener("keydown", e => {
+                // Global auto-focus
+                if (document.activeElement !== inputBox && e.key.length === 1) {
+                    inputBox.focus();
+                }
+
+                const visibleItems = Array.from(clickableItems).filter(i => !i.classList.contains("dimmed"));
+
+                if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    selectedIndex = (selectedIndex + 1) % visibleItems.length;
+                    updateSelection(visibleItems);
+                } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    selectedIndex = (selectedIndex - 1 + visibleItems.length) % visibleItems.length;
+                    updateSelection(visibleItems);
+                } else if (e.key === "Enter") {
                     const val = inputBox.value.trim().toLowerCase();
-                    if (!val) return;
-                    const cleanVal = val.replace(/[^\w\s]/gi, '');
-                    const target = links[val] || links[cleanVal];
-                    if (target) {
-                        window.open(target, "_blank");
-                    } else {
-                        window.open(`https://www.google.com/search?q=${encodeURIComponent(val)}`, "_blank");
+                    if (selectedIndex >= 0 && visibleItems[selectedIndex]) {
+                        window.open(visibleItems[selectedIndex].dataset.url, "_blank");
+                    } else if (val) {
+                        let target = null;
+                        siteData.forEach(g => g.links.forEach(l => {
+                            if (l.alias.includes(val)) target = l.url;
+                        }));
+                        window.open(target || `https://www.google.com/search?q=${encodeURIComponent(val)}`, "_blank");
                     }
                     inputBox.value = "";
                     filterItems("");
@@ -140,17 +161,13 @@
 
             container.addEventListener("click", e => {
                 const item = e.target.closest(".subtext");
-                if (item) {
-                    const text = item.textContent.toLowerCase().replace(/[^\w\s]/gi, '').trim();
-                    if (links[text]) window.open(links[text], "_blank");
-                }
+                if (item) window.open(item.dataset.url, "_blank");
             });
         });
 
-        // Register Service Worker for instant loading
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW failed', err));
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
             });
         }
     </script>
