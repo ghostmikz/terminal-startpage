@@ -45,6 +45,8 @@
         
         .text-area { flex-grow: 1; background-color: transparent; border: none; color: white; font-size: 14px; font-family: "Fira Code", monospace; outline: none; caret-color: #B62ED8; letter-spacing: 2px; }
         
+        /* Category styling */
+        .category { text-transform: capitalize; margin-bottom: 5px; }
         .category.general { color: #2ED8A2; }
         .category.coding { color: #D1AFF8; }
         .category.dev { color: #62E0E2; }
@@ -69,25 +71,25 @@
             let selectedIndex = -1;
 
             const siteData = [
-                { cat: "General", links: [
+                { cat: "general", links: [
                     { name: "🎬 YouTube", url: "https://www.youtube.com/", alias: ["yt"] },
                     { name: "📸 Instagram", url: "https://www.instagram.com/", alias: ["ig"] },
                     { name: "🌐 Facebook", url: "https://www.facebook.com/", alias: ["fb"] },
                     { name: "🤖 Reddit", url: "https://www.reddit.com/", alias: ["r"] }
                 ]},
-                { cat: "Personal", links: [
+                { cat: "personal", links: [
                     { name: "⌨️ Monkeytype", url: "https://monkeytype.com/", alias: ["mt"] },
                     { name: "🎧 Spotify", url: "https://open.spotify.com/", alias: ["sp"] },
                     { name: "🎨 Pinterest", url: "https://www.pinterest.com/", alias: ["pin"] },
                     { name: "📁 FMHY", url: "https://fmhy.net/", alias: ["fm"] }
                 ]},
-                { cat: "Coding", links: [
+                { cat: "coding", links: [
                     { name: "⚔️ LeetCode", url: "https://leetcode.com/", alias: ["lc"] },
                     { name: "🏆 Codeforces", url: "https://codeforces.com/", alias: ["cf"] },
                     { name: "📦 CodePen", url: "https://codepen.io/", alias: ["cp"] },
                     { name: "📊 CSES", url: "https://cses.fi/", alias: ["cses"] }
                 ]},
-                { cat: "Dev", links: [
+                { cat: "dev", links: [
                     { name: "🐙 GitHub", url: "https://github.com/", alias: ["gh"] },
                     { name: "✨ Gemini", url: "https://gemini.google.com/", alias: ["gem"] },
                     { name: "🧠 ChatGPT", url: "https://chatgpt.com/", alias: ["gpt"] },
@@ -130,7 +132,6 @@
             input.addEventListener("input", e => filterItems(e.target.value));
 
             document.addEventListener("keydown", e => {
-                // Auto-focus input on keypress
                 if (document.activeElement !== input && e.key.length === 1) input.focus();
 
                 const visible = Array.from(items).filter(i => !i.classList.contains("dimmed"));
@@ -148,7 +149,6 @@
                 } 
                 else if (e.key === "Enter") {
                     const val = input.value.trim().toLowerCase();
-                    // Open highlighted item OR search
                     if (selectedIndex >= 0) {
                         window.open(visible[selectedIndex].dataset.url, "_blank");
                     } else if (val) {
@@ -169,7 +169,6 @@
             });
         });
 
-        // SW registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -177,4 +176,3 @@
         }
     </script>
 </body>
-</html>
