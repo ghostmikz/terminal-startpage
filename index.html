@@ -64,7 +64,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const inputBox = document.querySelector(".text-area");
+            const input = document.querySelector(".text-area");
             const container = document.getElementById("link-container");
             let selectedIndex = -1;
 
@@ -95,78 +95,72 @@
                 ]}
             ];
 
-            // Build UI
+            // Render columns and links
             container.innerHTML = siteData.map(group => `
                 <div class="column">
-                    <div class="category ${group.cat}">${group.cat.charAt(0).toUpperCase() + group.cat.slice(1)}</div>
-                    ${group.links.map(link => `<div class="subtext" data-url="${link.url}" data-alias='${JSON.stringify(link.alias)}'>${link.name}</div>`).join('')}
+                    <div class="category ${group.cat}">${group.cat}</div>
+                    ${group.links.map(l => `
+                        <div class="subtext" data-url="${l.url}" data-alias='${JSON.stringify(l.alias)}'>
+                            ${l.name}
+                        </div>`).join('')}
                 </div>
             `).join('');
 
-            const clickableItems = document.querySelectorAll(".subtext");
+            const items = document.querySelectorAll(".subtext");
 
             const filterItems = (query) => {
                 const q = query.toLowerCase().trim();
                 selectedIndex = -1;
-                clickableItems.forEach(item => {
+                items.forEach(item => {
                     const name = item.textContent.toLowerCase();
                     const aliases = JSON.parse(item.dataset.alias);
-                    const isMatch = q === "" || name.includes(q) || aliases.some(a => a.includes(q));
-                    item.classList.toggle("dimmed", !isMatch);
+                    const match = !q || name.includes(q) || aliases.some(a => a.includes(q));
+                    item.classList.toggle("dimmed", !match);
                     item.classList.remove("selected");
                 });
             };
 
-            const updateSelection = (visibleItems) => {
-                clickableItems.forEach(i => i.classList.remove("selected"));
-                if (selectedIndex >= 0 && visibleItems[selectedIndex]) {
-                    visibleItems[selectedIndex].classList.add("selected");
+            const updateSelection = (visible) => {
+                items.forEach(i => i.classList.remove("selected"));
+                if (selectedIndex >= 0 && visible[selectedIndex]) {
+                    visible[selectedIndex].classList.add("selected");
                 }
             };
 
-            inputBox.addEventListener("input", e => filterItems(e.target.value));
+            input.addEventListener("input", e => filterItems(e.target.value));
 
             document.addEventListener("keydown", e => {
-                if (document.activeElement !== inputBox && e.key.length === 1) {
-                    inputBox.focus();
-                }
+                // Auto-focus input on keypress
+                if (document.activeElement !== input && e.key.length === 1) input.focus();
 
-                const visibleItems = Array.from(clickableItems).filter(i => !i.classList.contains("dimmed"));
-                if (visibleItems.length === 0) return;
+                const visible = Array.from(items).filter(i => !i.classList.contains("dimmed"));
+                if (!visible.length) return;
 
                 if (e.key === "ArrowDown") {
                     e.preventDefault();
-                    selectedIndex = (selectedIndex + 1) % visibleItems.length;
+                    selectedIndex = (selectedIndex + 1) % visible.length;
+                    updateSelection(visible);
                 } 
                 else if (e.key === "ArrowUp") {
                     e.preventDefault();
-                    selectedIndex = (selectedIndex - 1 + visibleItems.length) % visibleItems.length;
-                } 
-                else if (e.key === "ArrowRight") {
-                    e.preventDefault();
-                    if (selectedIndex === -1) selectedIndex = 0;
-                    else selectedIndex = (selectedIndex + 1) % visibleItems.length;
-                } 
-                else if (e.key === "ArrowLeft") {
-                    e.preventDefault();
-                    if (selectedIndex <= 0) selectedIndex = visibleItems.length - 1;
-                    else selectedIndex = selectedIndex - 1;
+                    selectedIndex = (selectedIndex - 1 + visible.length) % visible.length;
+                    updateSelection(visible);
                 } 
                 else if (e.key === "Enter") {
-                    const val = inputBox.value.trim().toLowerCase();
-                    if (selectedIndex >= 0 && visibleItems[selectedIndex]) {
-                        window.open(visibleItems[selectedIndex].dataset.url, "_blank");
+                    const val = input.value.trim().toLowerCase();
+                    // Open highlighted item OR search
+                    if (selectedIndex >= 0) {
+                        window.open(visible[selectedIndex].dataset.url, "_blank");
                     } else if (val) {
                         let target = null;
                         siteData.forEach(g => g.links.forEach(l => {
                             if (l.alias.includes(val)) target = l.url;
                         }));
-                        window.open(target || `https://www.google.com/search?q=${encodeURIComponent(val)}`, "_blank");
+                        window.open(target || `https://google.com/search?q=${val}`, "_blank");
                     }
-                    inputBox.value = "";
+                    input.value = "";
                     filterItems("");
                 }
-                updateSelection(visibleItems);
             });
 
             container.addEventListener("click", e => {
@@ -175,6 +169,7 @@
             });
         });
 
+        // SW registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(() => {});
