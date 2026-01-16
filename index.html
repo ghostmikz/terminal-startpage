@@ -45,7 +45,6 @@
         
         .text-area { flex-grow: 1; background-color: transparent; border: none; color: white; font-size: 14px; font-family: "Fira Code", monospace; outline: none; caret-color: #B62ED8; letter-spacing: 2px; }
         
-        /* Category styling */
         .category { text-transform: capitalize; margin-bottom: 5px; }
         .category.general { color: #2ED8A2; }
         .category.coding { color: #D1AFF8; }
@@ -79,7 +78,7 @@
                 ]},
                 { cat: "personal", links: [
                     { name: "⌨️ Monkeytype", url: "https://monkeytype.com/", alias: ["mt"] },
-                    { name: "🎧 Spotify", url: "https://open.spotify.com/", alias: ["sp"] },
+                    { name: "🎧 Spotify", url: "https://spotify.com", alias: ["sp"] },
                     { name: "🎨 Pinterest", url: "https://www.pinterest.com/", alias: ["pin"] },
                     { name: "📁 FMHY", url: "https://fmhy.net/", alias: ["fm"] }
                 ]},
@@ -97,7 +96,7 @@
                 ]}
             ];
 
-            // Render columns and links
+            // Setup UI
             container.innerHTML = siteData.map(group => `
                 <div class="column">
                     <div class="category ${group.cat}">${group.cat}</div>
@@ -135,37 +134,45 @@
                 if (document.activeElement !== input && e.key.length === 1) input.focus();
 
                 const visible = Array.from(items).filter(i => !i.classList.contains("dimmed"));
-                if (!visible.length) return;
 
                 if (e.key === "ArrowDown") {
                     e.preventDefault();
-                    selectedIndex = (selectedIndex + 1) % visible.length;
-                    updateSelection(visible);
+                    if (visible.length > 0) {
+                        selectedIndex = (selectedIndex + 1) % visible.length;
+                        updateSelection(visible);
+                    }
                 } 
                 else if (e.key === "ArrowUp") {
                     e.preventDefault();
-                    selectedIndex = (selectedIndex - 1 + visible.length) % visible.length;
-                    updateSelection(visible);
+                    if (visible.length > 0) {
+                        selectedIndex = (selectedIndex - 1 + visible.length) % visible.length;
+                        updateSelection(visible);
+                    }
                 } 
                 else if (e.key === "Enter") {
-                    const val = input.value.trim().toLowerCase();
-                    if (selectedIndex >= 0) {
-                        window.open(visible[selectedIndex].dataset.url, "_blank");
-                    } else if (val) {
-                        let target = null;
+                    const val = input.value.trim();
+                    if (!val && selectedIndex === -1) return;
+
+                    let targetUrl = `https://www.google.com/search?q=${encodeURIComponent(val)}`;
+
+                    if (selectedIndex >= 0 && visible[selectedIndex]) {
+                        targetUrl = visible[selectedIndex].dataset.url;
+                    } else {
+                        const lowVal = val.toLowerCase();
                         siteData.forEach(g => g.links.forEach(l => {
-                            if (l.alias.includes(val)) target = l.url;
+                            if (l.alias.includes(lowVal)) targetUrl = l.url;
                         }));
-                        window.open(target || `https://google.com/search?q=${val}`, "_blank");
                     }
-                    input.value = "";
-                    filterItems("");
+
+                    // Navigate current tab
+                    window.location.href = targetUrl;
                 }
             });
 
+            // Handle clicks to also use current tab
             container.addEventListener("click", e => {
                 const item = e.target.closest(".subtext");
-                if (item) window.open(item.dataset.url, "_blank");
+                if (item) window.location.href = item.dataset.url;
             });
         });
 
@@ -176,3 +183,4 @@
         }
     </script>
 </body>
+</html>
